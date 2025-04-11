@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отчет</title>
+    <!-- Подключаем скрипт Telegram Web App API -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 90vh; /* Занять почти всю высоту */
+            margin: 0;
+            background-color: var(--tg-theme-bg-color, #ffffff); /* Используем цвет фона из темы Telegram */
+            color: var(--tg-theme-text-color, #000000); /* Используем цвет текста из темы Telegram */
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background-color: var(--tg-theme-button-color, #007bff); /* Используем цвет кнопки из темы */
+            color: var(--tg-theme-button-text-color, #ffffff); /* Используем цвет текста кнопки из темы */
+            transition: background-color 0.2s ease;
+        }
+        button:disabled {
+             background-color: var(--tg-theme-hint-color, #cccccc);
+             cursor: not-allowed;
+        }
+        button:active {
+             background-color: #0056b3; /* Можно добавить эффект нажатия, но цвета темы могут перекрыть */
+        }
+    </style>
+</head>
+<body>
+
+<button id="reportButton">Отправить Отчет</button>
+
+<script>
+    const tg = window.Telegram.WebApp;
+    const reportButton = document.getElementById('reportButton');
+    let reportSent = false; // Флаг, чтобы предотвратить повторную отправку
+
+    // Инициализируем приложение Telegram
+    tg.ready();
+
+    reportButton.addEventListener('click', () => {
+        if (reportSent) return; // Если отчет уже отправлен, ничего не делаем
+
+        // Данные, которые мы отправим боту
+        const dataToSend = {
+            action: 'send_report',
+            timestamp: new Date().toISOString()
+            // Можно добавить больше данных, если нужно, например, tg.initDataUnsafe.user
+        };
+
+        // Отправляем данные боту в формате JSON строки
+        tg.sendData(JSON.stringify(dataToSend));
+
+        // Опционально: Даем обратную связь пользователю и блокируем кнопку
+        reportButton.textContent = 'Отчет отправлен!';
+        reportButton.disabled = true;
+        reportSent = true;
+
+        // Опционально: Закрыть Mini App через 1.5 секунды
+        // setTimeout(() => {
+        //    tg.close();
+        // }, 1500);
+    });
+
+</script>
+</body>
+</html>
