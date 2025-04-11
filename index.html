@@ -70,6 +70,23 @@
         // setTimeout(() => {
         //    tg.close();
         // }, 1500);
+        // Внутри обработчика клика кнопки в index.html
+reportButton.addEventListener('click', () => {
+    if (reportSent) return;
+
+    alert("ПОПЫТКА ОТПРАВКИ!"); // <--- ДОБАВЬТЕ ЭТУ СТРОКУ
+
+    const dataToSend = {
+        action: 'send_report',
+        timestamp: new Date().toISOString()
+    };
+
+    tg.sendData(JSON.stringify(dataToSend));
+
+    reportButton.textContent = 'Отчет отправлен!';
+    reportButton.disabled = true;
+    reportSent = true;
+});
     });
 
 </script>
