@@ -1,179 +1,38 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <!-- Важно для адаптивности и предотвращения масштабирования -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Отчет MiniApp</title>
-    <!-- Подключаем скрипт Telegram Web App API -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* Стили для body и подгонка под тему Telegram */
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh; /* Используем 100vh для занятия всей высоты видимой области */
-            margin: 0;
-            padding: 15px;
-            box-sizing: border-box; /* Чтобы padding не увеличивал размер body */
-            background-color: var(--tg-theme-bg-color, #ffffff);
-            color: var(--tg-theme-text-color, #000000);
-            transition: background-color 0.3s ease, color 0.3s ease; /* Плавный переход темы */
+            padding: 20px;
+            background: var(--tg-theme-bg-color);
+            color: var(--tg-theme-text-color);
         }
-        /* Контейнер для центрирования содержимого */
-        .container {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            width: 100%;
-        }
-        /* Стилизация кнопки */
         button {
             padding: 15px 30px;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
+            background: var(--tg-theme-button-color);
+            color: var(--tg-theme-button-text-color);
             border: none;
             border-radius: 10px;
-            background-color: var(--tg-theme-button-color, #007bff);
-            color: var(--tg-theme-button-text-color, #ffffff);
-            transition: background-color 0.2s ease, transform 0.1s ease;
-            width: 80%; /* Ширина кнопки */
-            max-width: 300px; /* Максимальная ширина */
-        }
-        /* Эффект при нажатии */
-        button:active {
-             transform: scale(0.98);
-        }
-        /* Стиль для заблокированной кнопки */
-        button:disabled {
-             background-color: var(--tg-theme-secondary-bg-color, #e0e0e0); /* Используем вторичный фон для неактивного состояния */
-             color: var(--tg-theme-hint-color, #a0a0a0); /* Бледный текст */
-             cursor: not-allowed;
-             transform: none; /* Убираем эффект нажатия */
-        }
-        /* Сообщение о статусе под кнопкой */
-        #statusMessage {
-            margin-top: 20px;
-            font-size: 14px;
-            color: var(--tg-theme-hint-color, #888888);
-            min-height: 20px; /* Резервируем место */
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
+    <button onclick="sendReport()">📤 Отправить отчет</button>
 
-<div class="container">
-    <h1>Форма Отчета</h1>
-    <button id="reportButton">Отправить Отчет</button>
-    <p id="statusMessage">Готово к отправке.</p>
-</div>
-
-<script>
-    // Убедимся, что скрипт Telegram загрузился
-    if (window.Telegram && window.Telegram.WebApp) {
-        const tg = window.Telegram.WebApp;
-        const reportButton = document.getElementById('reportButton');
-        const statusMessage = document.getElementById('statusMessage');
-        let reportSent = false; // Флаг для предотвращения повторной отправки
-
-        console.log("Telegram Web App SDK загружен.");
-
-        // Ждем готовности API Telegram
-        tg.ready();
-        console.log("tg.ready() вызван.");
-
-        // Логируем данные инициализации (ВНИМАНИЕ: небезопасные данные!)
-        console.log("Небезопасные данные инициализации:", tg.initDataUnsafe);
-        // Логируем параметры темы
-        console.log("Параметры темы:", tg.themeParams);
-
-        // Назначаем обработчик клика на кнопку
-        reportButton.addEventListener('click', () => {
-            console.log("Кнопка нажата.");
-            if (reportSent) {
-                console.log("Отчет уже был отправлен, повторный клик игнорируется.");
-                return; // Если отчет уже отправлен, ничего не делаем
-            }
-
-            try {
-                // Обновляем UI: блокируем кнопку и меняем текст
-                reportButton.disabled = true;
-                reportButton.textContent = 'Отправка...';
-                statusMessage.textContent = 'Подождите, идет отправка...';
-                console.log("Кнопка заблокирована, статус обновлен на 'Отправка...'");
-
-                // --- ВАШ ОТЛАДОЧНЫЙ ALERT ---
-                alert("ПОПЫТКА ОТПРАВКИ УПРОЩЕННЫХ ДАННЫХ!");
-                // --------------------------
-
-                // ============================================================
-                // === ВРЕМЕННОЕ УПРОЩЕНИЕ ДАННЫХ ДЛЯ ТЕСТИРОВАНИЯ SENDDATA ===
-                // Вместо формирования сложного объекта, отправляем простую строку
-                const simpleDataString = '{"action": "test_from_html", "debug_time": "' + new Date().toISOString() + '"}';
-                console.log("Подготовлены УПРОЩЕННЫЕ данные для отправки:", simpleDataString);
-
-                // Отправляем данные боту
-                tg.sendData(simpleDataString);
-                console.log("tg.sendData() вызвана с УПРОЩЕННЫМИ данными.");
-                // ============================================================
-
-
-                /* --- СТАРЫЙ КОД (закомментирован на время теста) ---
-                // Данные, которые мы отправим боту
-                const dataToSend = {
-                    action: 'send_report',
-                    timestamp: new Date().toISOString()
-                };
-                const dataString = JSON.stringify(dataToSend);
-                console.log("Подготовлены данные для отправки:", dataString);
-                tg.sendData(dataString);
-                console.log("tg.sendData() вызвана.");
-                */ // --- КОНЕЦ СТАРОГО КОДА ---
-
-
-                // Сразу обновляем UI на "отправлено", т.к. sendData не дает прямого коллбека успеха/неудачи
-                // Бот должен прислать подтверждение в чат, если все успешно на его стороне.
-                reportButton.textContent = 'Отчет отправлен!';
-                statusMessage.textContent = '✅ Данные отправлены (проверьте консоль бота)!'; // Изменен текст
-                reportSent = true; // Ставим флаг отправки
-                console.log("Статус обновлен на 'Отправлено'. Флаг reportSent установлен.");
-
-                // Опционально: Закрыть Mini App через 1.5 секунды
-                // setTimeout(() => {
-                //     console.log("Закрытие окна Mini App...");
-                //     tg.close();
-                // }, 1500);
-
-            } catch (error) {
-                // Этот блок поймает только ошибки в НАШЕМ JS коде, а не проблемы с отправкой Telegram
-                console.error("Произошла ошибка в JavaScript обработчике:", error);
-                statusMessage.textContent = '❌ Ошибка JS при попытке отправки!';
-                // Разблокируем кнопку, если произошла локальная ошибка до фактической отправки
-                if (!reportSent) { // Разблокируем только если еще не установили флаг reportSent
-                   reportButton.disabled = false;
-                   reportButton.textContent = 'Отправить Отчет';
-                }
-            }
-        });
-
-        // Делаем кнопку видимой (если бы она была скрыта изначально)
-        // tg.expand(); // Раскрываем окно приложения на максимум (можно включить если нужно)
-        console.log("Инициализация страницы завершена. Кнопка готова к нажатию.")
-
-    } else {
-        // Сообщение об ошибке, если Telegram Web App API не загрузился
-        console.error("Ошибка: Не удалось загрузить Telegram Web App SDK.");
-        const container = document.querySelector('.container');
-        if (container) {
-             container.innerHTML = '<h1>Ошибка</h1><p>Не удалось инициализировать приложение Telegram. Попробуйте перезапустить.</p>';
+    <script>
+        function sendReport() {
+            const user = Telegram.WebApp.initDataUnsafe.user;
+            const report = {
+                user_id: user?.id || 'неизвестно',
+                username: user?.username || 'неизвестно',
+                action: 'Отчет отправлен через GitHub Pages',
+                timestamp: new Date().toISOString()
+            };
+            Telegram.WebApp.sendData(JSON.stringify(report));
+            Telegram.WebApp.close();
         }
-    }
-</script>
-
+    </script>
 </body>
 </html>
